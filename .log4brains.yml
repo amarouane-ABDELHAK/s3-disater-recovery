@@ -1,0 +1,5 @@
+project:
+  name: s3-disater-recovery
+  tz: America/Chicago
+  adrFolder: ./docs/adr
+  packages: []
