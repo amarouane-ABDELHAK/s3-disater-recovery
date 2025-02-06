@@ -58,6 +58,7 @@ We will implement a deployment automation framework using Ansible and GitHub Act
 - Reusable playbooks and roles streamline deployment logic across projects.
 
 ## Cons
+- Teams unfamiliar with Ansible may face a learning curve, requiring time and resources to become proficient.
 - Limited debugging insights compared to dedicated CI/CD tools sush as Bamboo or Jenkins.
 - SSH access requirements for GitHub Actions runners requires careful security configurations.
 - Stateless nature of Ansible requires careful change management compared to stateful IaC such as Terraform.
