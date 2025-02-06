@@ -23,7 +23,7 @@ OASIS teams require a standardized and automated deployment process to efficient
 
 - Ansible with GitHub Actions: Automating Playbook Runs
 
-## Decision Outcome
+## Proposed Solution
 
 We will implement a deployment automation framework using Ansible and GitHub Actions. This approach will involve integrating Ansible for infrastructure provisioning and application deployment, while GitHub Actions will handle the continuous integration (CI) and trigger the deployment processes.
 
