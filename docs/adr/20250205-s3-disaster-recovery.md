@@ -131,55 +131,68 @@ Leverage the existing Self Managed Apache Airflow (SM2A) to orchestrate and auto
 
 3️⃣ Restoration
 
-In case of accidental delete a lambda function for restoring the object will trigger the restore DAG which will restore the object and copy the file back to the original bucket.
+In case of accidental delete a lambda function for restoring the object will trigger the restore DAG which will restore the object and copy the file back to the original bucket. For permanent delete you will need to delete the backup object first
 
 
 
 - 
 ## Decision Outcome
 
-Chosen option: "[option 1]", because [justification. e.g., only option, which meets k.o. criterion decision driver | which resolves force force | … | comes out best (see below)].
+TBD
 
 ### Positive Consequences <!-- optional -->
 
-- [e.g., improvement of quality attribute satisfaction, follow-up decisions required, …]
-- …
+- TBD
 
 ### Negative Consequences <!-- optional -->
 
-- [e.g., compromising quality attribute, follow-up decisions required, …]
-- …
+- TBD
 
-## Pros and Cons of the Options <!-- optional -->
+## Pros and Cons of the Options
 
-### [option 1]
+### Option 1: Cross-Region Replication (CRR) with Versioning
 
-[example | description | pointer to more information | …] <!-- optional -->
+#### Pros:
+- Prevent Ransomware or Malicious Deletes
+- Automated and fully managed by AWS.
+- Protects against regional failures.
+- Allows for immediate failover to another region.
+- Storing data in multiple geographic locations.
+- Users in different regions can access replicated data with lower latency.
 
-- Good, because [argument a]
-- Good, because [argument b]
-- Bad, because [argument c]
-- … <!-- numbers of pros and cons can vary -->
+#### Cons:
+- High storage and replication costs.
+- Adding data transfer, and request costs for replication and versioning.
+- Requires proper policy configuration, versioning strategy, and lifecycle rules to avoid excessive costs.
 
-### [option 2]
 
-[example | description | pointer to more information | …] <!-- optional -->
+### Option 2: S3 Same-Region Replication (SRR) with Versioning
 
-- Good, because [argument a]
-- Good, because [argument b]
-- Bad, because [argument c]
-- … <!-- numbers of pros and cons can vary -->
+#### Pros:
+- Prevent Ransomware or Malicious Deletes
+- Helps maintain a redundant copy of objects within the same region, increasing fault tolerance.
+- Fatser recovery when compared to CRR (option 1).
+- Provides protection against accidental deletions and corruption by maintaining versioned copies in another bucket.
+- Can be combined with S3 Object Lock to prevent data tampering.
 
-### [option 3]
 
-[example | description | pointer to more information | …] <!-- optional -->
+#### Cons:
+- High storage and replication costs.
+- Does not help in case of a full-region outage.
+- Requires proper policy configuration, versioning strategy, and lifecycle rules to avoid excessive costs.
 
-- Good, because [argument a]
-- Good, because [argument b]
-- Bad, because [argument c]
-- … <!-- numbers of pros and cons can vary -->
 
-## Links <!-- optional -->
+### Option 3: S3 Backup and Restore using AWS Backup
 
-- [Link type](link to adr) <!-- example: Refined by [xxx](yyyymmdd-xxx.md) -->
-- … <!-- numbers of links can vary -->
+#### Pros:
+- Prevent Ransomware or Malicious Deletes
+- Helps maintain a redundant copy of objects within the same region, increasing fault tolerance.
+- Fatser recovery when compared to CRR (option 1).
+- Provides protection against accidental deletions and corruption by maintaining versioned copies in another bucket.
+- Can be combined with S3 Object Lock to prevent data tampering.
+
+
+#### Cons:
+- High storage and replication costs.
+- Does not help in case of a full-region outage.
+- Requires proper policy configuration, versioning strategy, and lifecycle rules to avoid excessive costs.
