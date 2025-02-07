@@ -84,7 +84,7 @@ SRR is particularly useful for data redundancy, compliance, access control, and 
 - If a specific object version is permanently deleted, it is not replicated unless explicitly configured.
 
 
-### Option 3: S3 Backup and Restore using AWS Backup (<span style="color:red">Affordable</span>)
+### Option 3: S3 Backup and Restore using AWS Backup (<span style="color:red">Cheap</span>)
 AWS Backup is a fully managed backup service that provides centralized backup management across AWS services, including Amazon S3. By using AWS Backup, you can protect your S3 data by creating automated backup schedules, applying retention policies, and ensuring that your data can be restored efficiently in the event of data loss, corruption, or deletion. AWS Backup offers a simple and scalable solution for backing up large datasets and helps maintain data integrity with compliance controls for industries that require robust backup strategies.
 
 #### How it works
@@ -110,7 +110,7 @@ AWS Backup is a fully managed backup service that provides centralized backup ma
 - Validation: Once the restore is complete, AWS Backup provides status updates, ensuring that the restore operation was successful and that the data integrity is maintained.
 
 
-### Option 4: Periodic S3 Backups to Another Bucket (<span style="color:red">Cheap</span>)
+### Option 4: Periodic S3 Backups to Another Bucket (<span style="color:red">Affordable</span>)
 
 Leverage the existing Self Managed Apache Airflow (SM2A) to orchestrate and automate the backup and restore process for S3 data. Airflow DAGs (Directed Acyclic Graphs) can be used to schedule and manage workflows that perform regular backups of S3 buckets to other S3 bucket.
 
@@ -148,9 +148,53 @@ TBD
 
 - TBD
 
-## Pros and Cons of the Options
+
+## Cost Estimate of the Options
+This section includes an estimate of the associated costs for maintaining 1TB of data. We are not including the cost of the source bucket because you will be paying that cost regardless of the chosen option.
+
+### Disclamer 
+The following cost estimates are based on standard AWS pricing as of the latest update and do not account for any future price changes or optimizations.
 
 ### Option 1: Cross-Region Replication (CRR) with Versioning
+CRR involves replicating the data to a different AWS region, incurring additional storage and data transfer costs.
+- Storage Costs:
+    - 1TB in destination region = 1024 GB
+    - Annual Cost: 1024 GB x 0.023/month *12 = $282.60
+- Data Transfer Costs: 
+    - 1024 GB x $0.02 = $20.48
+Total Annual Cost = <span style="color:red">$303.08 </span>  
+
+### Option 2: S3 Same-Region Replication (SRR) with Versioning
+
+SRR replicates data within the same region, eliminating cross-region transfer costs.
+- Storage Costs:
+    - 1TB in destination region = 1024 GB
+    - Annual Cost: 1024 GB x 0.023/month *12 = $282.60
+
+Total Annual Cost = <span style="color:red">$282.60 </span> 
+
+### Option 3: S3 Backup and Restore using AWS Backup
+
+AWS Backup provides centralized backup management, with separate costs for backup storage.
+- Storage Costs:
+    - 1TB in backup storage = 1024 GB
+    - Annual Cost: 1024 GB x 0.01/month *12 = $122.88
+
+Total Annual Cost = <span style="color:red">$122.88 </span> 
+
+### Option 4: Periodic S3 Backups to Another Bucket
+This strategy uses an existing workflow to periodically copy data to another S3 bucket, including S3 event notifications and Lambda executions.
+- Storage Costs:
+    - 1TB in destination region = 1024 GB
+    - Annual Cost: 1024 GB x 0.023/month *12 = $282.60
+- S3 Event Notification:
+    - Typically low or no cost, as S3 events themselves do not incur charges, but triggering services like Lambda might.
+- Lambda Executions:
+Assume 1 million requests per month and minimal compute time (e.g., 128MB, 100ms execution time per request)
+    - Annual Request and Compute Cost: 1 million requests x 0.21/millionrequests * 12 = $2.52
+Total Annual Cost = <span style="color:red">$285.12 </span>
+
+## Pros and Cons of the Options
 
 #### Pros:
 - Prevent Ransomware or Malicious Deletes
@@ -196,3 +240,17 @@ TBD
 - High storage and replication costs.
 - Does not help in case of a full-region outage.
 - Requires proper policy configuration, versioning strategy, and lifecycle rules to avoid excessive costs.
+
+
+### Option 4: Periodic S3 Backups to Another Bucket
+#### Pros:
+- More control over backup frequency and storage.
+- Ability to filter and backup only necessary objects instead of the entire bucket..
+- Can choose whether to store backups in the same or different cloud accounts (or on-prem).
+- Airflow can monitor and retry failed backup tasks for reliability.
+
+
+#### Cons:
+- Requires monitoring and maintaining Airflow DAGs and Lambda functions.
+- If backup frequency is too low, recent changes may not be included in the latest backup.
+- Copying large volumes of data periodically may impact performance of Airflow
